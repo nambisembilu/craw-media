@@ -12,7 +12,7 @@ keyword = st.text_input("📝 Masukkan kata kunci pencarian", value="makan bergi
 
 # Tambahkan tombol proses
 if uploaded_file and keyword:
-    if st.button("🔍Ambil Data"):
+    if st.button("🔍 Ambil Data"):
         df_input = pd.read_csv(uploaded_file)
         all_results = []
 
