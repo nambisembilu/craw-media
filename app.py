@@ -1,29 +1,38 @@
 import streamlit as st
-from twitter_pipeline import crawl_tweets
+import pandas as pd
+from web_scraper import scrape_search_results
+from io import BytesIO
 
-st.set_page_config(page_title="Crawl4AI X-Tweet Analyzer", layout="wide")
-st.title("🐦 Crawl & AI Analysis dari Platform X (Twitter)")
+st.set_page_config(page_title="Crawl Search Tool", layout="wide")
+st.title("🔍 Web Search Extractor")
 
-with st.form("crawl_form"):
-    topic = st.text_input("Masukkan topik pencarian", value="makan bergizi gratis")
-    jumlah = st.slider("Jumlah tweet", 10, 100, 20)
-    use_ai = st.checkbox("Gunakan analisis AI GPT-4?")
-    prompt = st.text_area("Prompt untuk analisis AI", value="Apa topik utama dan konteks tweet ini?")
-    submitted = st.form_submit_button("Jalankan Crawling")
+uploaded_file = st.file_uploader("📥 Upload CSV berisi daftar URL (kolom: url)", type="csv")
+keyword = st.text_input("📝 Masukkan kata kunci pencarian", value="makan bergizi gratis")
 
-if submitted:
-    with st.spinner("⏳ Sedang mengambil data tweet..."):
-        df = crawl_tweets(query=f'"{topic}" lang:id', max_tweets=jumlah, use_ai=use_ai, prompt=prompt)
+if uploaded_file and keyword:
+    df_input = pd.read_csv(uploaded_file)
+    all_results = []
 
-    st.success(f"✅ Ditemukan {len(df)} tweet!")
-    st.dataframe(df)
+    with st.spinner("⏳ Sedang memproses URL..."):
+        for i, row in df_input.iterrows():
+            url = row['url']
+            result = scrape_search_results(url, keyword)
+            for r in result:
+                all_results.append({'sumber': url, **r})
 
-    csv = df.to_csv(index=False).encode("utf-8")
-    st.download_button("📥 Unduh sebagai CSV", csv, "hasil_crawling.csv", "text/csv")
+    df_out = pd.DataFrame(all_results)
+    st.success(f"✅ Ditemukan {len(df_out)} hasil")
+    st.dataframe(df_out)
 
-    if use_ai:
-        st.markdown("### 🔍 Ringkasan Analisis AI")
-        for i, row in df.iterrows():
-            st.subheader(f"Tweet dari @{row['username']}")
-            st.write(row["content"])
-            st.info(row["analisis_ai"])
+    # Export ke Excel
+    towrite = BytesIO()
+    with pd.ExcelWriter(towrite, engine='xlsxwriter') as writer:
+        df_out.to_excel(writer, index=False, sheet_name='Hasil')
+    towrite.seek(0)
+
+    st.download_button(
+        label="📤 Download hasil sebagai Excel",
+        data=towrite,
+        file_name="hasil_pencarian.xlsx",
+        mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+    )

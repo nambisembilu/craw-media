@@ -1,4 +1,5 @@
 streamlit
-snscrape
+requests
+beautifulsoup4
 pandas
-openai
+xlsxwriter
