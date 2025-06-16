@@ -4,15 +4,15 @@ from web_scraper import scrape_search_results
 from io import BytesIO
 
 st.set_page_config(page_title="Crawl Search Tool", layout="wide")
-st.title("🔍 Web Search Extractor")
+st.title("🌏 Web Search Extractor")
 
 # Upload CSV dan input kata kunci
-uploaded_file = st.file_uploader("📥 Upload CSV berisi daftar URL (kolom: url)", type="csv")
+uploaded_file = st.file_uploader("⬆️ Upload CSV berisi daftar URL (kolom: url)", type="csv")
 keyword = st.text_input("📝 Masukkan kata kunci pencarian", value="makan bergizi gratis")
 
 # Tambahkan tombol proses
 if uploaded_file and keyword:
-    if st.button("🔍 Proses Pencarian"):
+    if st.button("🔍Ambil Data"):
         df_input = pd.read_csv(uploaded_file)
         all_results = []
 
