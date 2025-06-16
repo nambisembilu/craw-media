@@ -4,7 +4,7 @@ from io import BytesIO
 from web_scraper import scrape_search_results  # pastikan file ini ada
 import time
 
-st.set_page_config(page_title="🕵️‍♂⛏️ Scraptic", layout="wide")
+st.set_page_config(page_title="⛏️ Scraptic", layout="wide")
 st.title("🌏 Web Scrap & Article Extractor")
 
 uploaded_file = st.file_uploader("📥 Upload CSV berisi daftar URL (kolom: url)", type="csv")
